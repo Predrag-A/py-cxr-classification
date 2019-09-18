@@ -1,0 +1,5 @@
+.idea/*
+cxr-data/images/*
+cxr-data/train/*
+cxr-data/validation/*
+logfile.log

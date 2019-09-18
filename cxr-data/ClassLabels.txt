@@ -1,0 +1,15 @@
+Atelectasis
+Consolidation
+Infiltration
+Pneumothorax
+Edema
+Emphysema
+Fibrosis
+Effusion
+Pneumonia
+Pleural_Thickening
+Cardiomegaly
+No Finding
+Nodule 
+Mass
+Hernia
