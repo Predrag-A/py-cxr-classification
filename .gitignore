@@ -1,5 +1,8 @@
 .idea/*
 cxr-data/images/*
 cxr-data/train/*
+cxr-data/train-sample/*
 cxr-data/validation/*
+cxr-data/validation-sample/*
 logfile.log
+scripts/__pycache__/*

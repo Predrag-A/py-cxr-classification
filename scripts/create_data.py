@@ -5,9 +5,9 @@ import time
 import argparse
 import logging
 import random
+from PIL import Image
 from functools import partial
 from multiprocessing import Pool
-from shutil import copy
 
 
 # Create folder structure for Keras using Kaggle data (image folder + csv file)
@@ -95,11 +95,12 @@ def copy_image_to_folder(label, file_name, image_path, output_path):
 
     dst_path = output_path
     if random.randint(0, 101) > 20:
-        dst_path += '/train/' + label
+        dst_path += '/train/' + label + "/" + file_name
     else:
-        dst_path += '/validation/' + label
+        dst_path += '/validation/' + label + file_name
     src_path = image_path + file_name
-    copy(src_path, dst_path)
+    img = Image.open(src_path).convert('L').resize((448, 448), Image.ANTIALIAS)
+    img.save(dst_path, "")
 
 
 ###############################################################
