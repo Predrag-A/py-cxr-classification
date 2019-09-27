@@ -1,33 +1,48 @@
-from keras.models import load_model
-from keras.preprocessing import image
 from cnn_model import build_model
+from keras.preprocessing.image import img_to_array
+from keras.applications import imagenet_utils
+from keras.optimizers import Adam
 import numpy as np
-import json
 
 
 class Predictor:
 
-    def __init__(self):
+    def __init__(self, model_path):
 
-        temp_model = build_model(488, 488, 15)
-        temp_model.compile(loss='categorical_crossentropy',
-                      optimizer='adam',
+        model = build_model(448, 448, classes=15)
+        optimizer = Adam(learning_rate=0.01)
+
+        model.compile(loss='categorical_crossentropy',
+                      optimizer=optimizer,
                       metrics=['accuracy'])
-        temp_model.load_weights('model.h5')
-        self.model = temp_model
+        model.load_weights(model_path)
+        self.model = model
 
-    def predict(self, image_path):
-        img = image.load_img(image_path, target_size=(448, 448))
-        img_tensor = image.img_to_array(img)
-        img_tensor = np.expand_dims(img_tensor, axis=0)
-        img_tensor /= 255.
+    def prepare_image(self, image, target):
+        # Convert image to grayscale if needed
+        if image.mode != "L":
+            image = image.convert("L")
 
-        return self.model.predict(img_tensor)
+        # resize and preprocess image
+        image = image.resize(target)
+        image = img_to_array(image)
+        image = np.expand_dims(image, axis=0)
+        image = imagenet_utils.preprocess_input(image)
+        return image
 
+    def predict(self, image, target):
+        image = self.prepare_image(image, target)
 
-if __name__ == '__main__':
+        preds = self.model.predict(image)
+        results = imagenet_utils.decode_predictions(preds)
+        data = {"success": False}
+        data["predictions"] = []
 
-    img_path = 'train/Atelectasis/00000011_006.png'
-    predictor = Predictor()
-    predict = predictor.predict(img_path)
-    print(predict)
+        for imagenetID, label, prob in results[0]:
+            r = {"label": label, "probability": float(prob)}
+            data["predictions"].append(r)
+
+        data["success"] = True
+
+        return data
+
