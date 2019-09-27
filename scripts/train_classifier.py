@@ -1,23 +1,22 @@
 import matplotlib.pyplot as plt
 from cnn_model import build_model
 from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import plot_model
+from keras.optimizers import Adam
 
 # TODO: comment and create methods
 # dimensions of our images.
 img_width, img_height = 448, 448
 
-train_data_dir = 'cxr-data/train-sample'
-validation_data_dir = 'cxr-data/validation-sample'
-nb_train_samples = 2000
-nb_validation_samples = 400
+train_data_dir = 'cxr-data/train'
+validation_data_dir = 'cxr-data/validation'
 epochs = 50
 batch_size = 8
 
-model = build_model(img_height, img_width)
+model = build_model(img_height, img_width, classes=15)
+optimizer = Adam(learning_rate=0.01)
 
 model.compile(loss='categorical_crossentropy',
-              optimizer='adam',
+              optimizer=optimizer,
               metrics=['accuracy'])
 
 # this is the augmentation configuration we will use for training
@@ -47,24 +46,18 @@ validation_generator = test_datagen.flow_from_directory(
 
 history = model.fit_generator(
     train_generator,
-    steps_per_epoch=nb_train_samples // batch_size,
     epochs=epochs,
-    validation_data=validation_generator,
-    validation_steps=nb_validation_samples // batch_size)
+    validation_data=validation_generator)
 
-model.save_weights('sample-model.h5')
-
-# Save model configuration
-plot_model(model, to_file='model.png')
+model.save_weights('model.h5')
 
 # Plot training & validation accuracy values
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
 plt.title('Model accuracy')
 plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
-plt.show()
 plt.savefig('accuracy.png')
 
 # Plot training & validation loss values
@@ -74,7 +67,6 @@ plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Test'], loc='upper left')
-plt.show()
 plt.savefig('loss.png')
 
-#model.summary()
+# model.summary()

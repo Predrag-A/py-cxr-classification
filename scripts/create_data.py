@@ -97,7 +97,7 @@ def copy_image_to_folder(label, file_name, image_path, output_path):
     if random.randint(0, 101) > 20:
         dst_path += '/train/' + label + "/" + file_name
     else:
-        dst_path += '/validation/' + label + file_name
+        dst_path += '/validation/' + label + "/" + file_name
     src_path = image_path + file_name
     img = Image.open(src_path).convert('L').resize((448, 448), Image.ANTIALIAS)
     img.save(dst_path, "")

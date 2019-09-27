@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CXR Classifier</title>
+
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+    <script defer src="{{url_for('static', filename='app.js')}}"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body>
+    <div class="stripes">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <div class="row container-main">
+        <div class="col row s12 m6 container valign-wrapper center-align">
+            <div class="card z-depth-4 col-left">
+                <div class="card-content black-text">
+                    <span class="card-title">Chest X-Ray Classifier</span>
+                    <img src="{{url_for('static', filename='placeholder.png')}}" class="scale-down" id="previewImage">
+                    <blockquote>
+                        Select the Chest X-Ray image that you want diagnosed. Accuracy of the prediction model
+                        is not guaranteed.
+                    </blockquote>
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>Select</span>
+                            <input type="file" name="file" accept="image/*" class="btn-upload" id="fileToUpload">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input type="text" class="file-path" placeholder="Select image to upload">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m6 container valign-wrapper">
+            <div class="results">
+                <table>
+                    <thead id="tableHeader" style="font-weight: bold">
+                    </thead>
+                    <tbody id="resultsTable">
+                    </tbody>
+                </table>
+                <div class="loader hidden" id="loader" style="margin:auto">Loading</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
