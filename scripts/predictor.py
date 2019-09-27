@@ -1,22 +1,35 @@
 from cnn_model import build_model
 from keras.preprocessing.image import img_to_array
-from keras.applications import imagenet_utils
 from keras.optimizers import Adam
+import tensorflow as tf
 import numpy as np
 
 
 class Predictor:
 
-    def __init__(self, model_path):
+    def __init__(self, classes):
+        config = tf.ConfigProto()
+        config.gpu_options.allow_growth = True
+        self.model = None
+        self.classes = classes
+        self.session = tf.Session(config=config)
+        self.graph = tf.get_default_graph()
+        with self.graph.as_default():
+            with self.session.as_default():
+                print("NN initialized")
 
-        model = build_model(448, 448, classes=15)
-        optimizer = Adam(learning_rate=0.01)
+    def load(self, model_path=None, target=448):
+        with self.graph.as_default():
+            with self.session.as_default():
+                model = build_model(target, target, classes=len(self.classes))
 
-        model.compile(loss='categorical_crossentropy',
-                      optimizer=optimizer,
-                      metrics=['accuracy'])
-        model.load_weights(model_path)
-        self.model = model
+                optimizer = Adam(learning_rate=0.01)
+                model.compile(loss='categorical_crossentropy',
+                              optimizer=optimizer,
+                              metrics=['accuracy'])
+                model.load_weights(model_path)
+                self.model = model
+                print("NN model loaded")
 
     def prepare_image(self, image, target):
         # Convert image to grayscale if needed
@@ -27,22 +40,21 @@ class Predictor:
         image = image.resize(target)
         image = img_to_array(image)
         image = np.expand_dims(image, axis=0)
-        image = imagenet_utils.preprocess_input(image)
         return image
+
+    def decode_predictions(self, preds):
+        predictions = map(str, (preds[0]*100).round(decimals=4))
+        dictionary = dict(zip(self.classes, predictions))
+        sorted_dict = sorted(dictionary.items(), key=lambda x: x[1], reverse=True)[:5]
+        return dict(sorted_dict)
 
     def predict(self, image, target):
         image = self.prepare_image(image, target)
 
-        preds = self.model.predict(image)
-        results = imagenet_utils.decode_predictions(preds)
-        data = {"success": False}
-        data["predictions"] = []
+        with self.graph.as_default():
+            with self.session.as_default():
+                preds = self.model.predict(image)
+        results = self.decode_predictions(preds)
 
-        for imagenetID, label, prob in results[0]:
-            r = {"label": label, "probability": float(prob)}
-            data["predictions"].append(r)
-
-        data["success"] = True
-
-        return data
+        return results
 
