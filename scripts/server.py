@@ -24,16 +24,15 @@ class ProcessFiles(Resource):
             image = request.files["image"]
             image = image.read()
             image = Image.open(io.BytesIO(image))
-            result = predictor.predict(image=image, target=(448, 448))
+            result = predictor.predict(image=image, target_size=(448, 448))
             return jsonify(result)
-
 
 
 def load_predictor():
     global predictor
     classes = get_class_labels('cxr-data/ClassLabels.txt')
     predictor = Predictor(classes=classes)
-    predictor.load("model.h5")
+    predictor.load("model.h5", weights_only=True)
 
 
 api.add_resource(LandingPage, '/')

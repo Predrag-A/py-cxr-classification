@@ -10,11 +10,14 @@ from functools import partial
 from multiprocessing import Pool
 
 
-# Create folder structure for Keras using Kaggle data (image folder + csv file)
-# All images are contained in the image folder (image_path)
-# Class labels for each image in the folder are supplied in the CSV file (csv_path)
-# Only images with labels which are in the labels.txt file (label_path) will be processed
 def create_training_data(image_path, csv_path, label_path, output_path):
+    """
+    Create the folder structure for Keras using Kaggle data (image folder + csv file)
+    :param image_path: Folder path containing all images
+    :param csv_path: Class labels for each image in the folder
+    :param label_path: Class labels which should be processed
+    :param output_path: Path where the training data should be saved
+    """
 
     pool = Pool()
 
@@ -44,16 +47,37 @@ def create_training_data(image_path, csv_path, label_path, output_path):
         logging.exception("Exception occured")
 
 
-# Get class labels from the folder as a list
 def get_class_labels(label_path):
+    """
+    Get class labels from a txt file
+    :param label_path: Path of the txt file containing class labels
+    :return: List containing class labels from the file
+    """
+
     with open(label_path) as f:
         content = f.readlines()
     content = [x.strip() for x in content]
     return content
 
 
-# Create folders for each class label
 def create_folders(labels, output_path):
+    """
+    Create the folder structure for each class label. The folder structure will be the following:
+
+    output_path/
+    ├── train/
+    │   ├── class1/
+    │   ├── class2/
+    │   ...
+    │
+    └── validation/
+       ├── class1/
+       ├── class2/
+       ...
+
+    :param labels: List containing all class labels for predictions
+    :param output_path: Directory in which the folders will be located
+    """
 
     train_path = output_path + '/train/'
     validation_path = output_path + '/validation/'
@@ -66,8 +90,14 @@ def create_folders(labels, output_path):
             os.makedirs(path)
 
 
-# Copy image to corresponding class label folders
 def copy_image(row, class_labels, image_path, output_path):
+    """
+    Copy the image to corresponding class label folders
+    :param row: CSV file row, contains file name and class labels
+    :param class_labels: List containing all class labels for predictions
+    :param image_path: Root path of the directory where images are located
+    :param output_path: Directory path where the image should be copied
+    """
 
     delimiter = '|'      # Delimiter that separates class labels
     name_attr = row[1]   # File name
@@ -89,10 +119,15 @@ def copy_image(row, class_labels, image_path, output_path):
             logging.error('Invalid class label found for file (' + name_attr + ', ' + label_attr + ')')
 
 
-# Copy image from images folder to class label folder
-# Randomly send 20% to validation folders and 80% to training
 def copy_image_to_folder(label, file_name, image_path, output_path):
-
+    """
+    Copy image from images folder to class label folder
+    Randomly send 20% to validation folders and 80% to training
+    :param label: Class label of the image
+    :param file_name: File name of the image
+    :param image_path: Root path of the directory where images are located
+    :param output_path: Directory path where the image should be copied
+    """
     dst_path = output_path
     if random.randint(0, 101) > 20:
         dst_path += '/train/' + label + "/" + file_name

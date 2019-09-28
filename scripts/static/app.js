@@ -36,7 +36,7 @@ const upload = (file) => {
     }).then(response =>
         response.json() // if the response is a JSON object
     ).then(success => {
-        addRow("Disease", "Probability [%]", header);
+        addRow("Pathology", "Probability [%]", header);
 
         loader.className = 'loader hidden';
         table.className = 'visible highlight';
