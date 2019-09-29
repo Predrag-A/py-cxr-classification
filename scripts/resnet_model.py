@@ -1,5 +1,5 @@
 from keras.layers import Input, Add, Dense, Activation, ZeroPadding2D, BatchNormalization, Flatten, Conv2D,\
-    AveragePooling2D, MaxPooling2D
+    AveragePooling2D, MaxPooling2D, Concatenate
 from keras import backend as K
 from keras.models import Model
 
@@ -30,10 +30,10 @@ def identity_block(data, kernel_size, filters, stage, block):
     # Third component of main path
     data = Conv2D(filters=f3, kernel_size=(1, 1), strides=(1, 1), padding='valid', name=conv_name_base + '2c')(data)
     data = BatchNormalization(axis=3, name=bn_name_base + '2c')(data)
-    data = Activation('relu')(data)
 
     # Final step: Add shortcut value to main path, and pass it through a ReLu activation
     data = Add()([data, shortcut])
+    data = Activation('relu')(data)
 
     return data
 
@@ -71,15 +71,15 @@ def convolutional_block(data, kernel_size, filters, stage, block, s=2):
     shortcut = Conv2D(filters=f3, kernel_size=(1, 1), strides=(s, s), padding='valid',
                       name=conv_name_base + '10')(shortcut)
     shortcut = BatchNormalization(axis=3, name=bn_name_base + '1')(shortcut)
-    shortcut = Activation('relu')(shortcut)
 
     # Final step: Add shortcut value to main path, and pass it through a ReLu activation
     data = Add()([data, shortcut])
+    data = Activation('relu')(data)
 
     return data
 
 
-def build_resnet(img_height, img_width, classes=2):
+def build_resnet(img_height, img_width, classes=2, additional_input=False, vec_dim=3):
 
     input_shape = (img_height, img_width, 1)
 
@@ -128,8 +128,15 @@ def build_resnet(img_height, img_width, classes=2):
 
     # Output Layer
     x = Flatten()(x)
+    if additional_input:
+        # Concatenate additional attributes to input if provided
+        vec_input = Input((vec_dim,))
+        x = Concatenate()([x, vec_input])
     x = Dense(classes, activation='softmax', name='fc' + str(classes))(x)
 
-    model = Model(inputs=x_input, outputs=x, name='ResNet50')
+    if additional_input:
+        model = Model(inputs=[x_input, vec_input], outputs=x, name='ResNet50')
+    else:
+        model = Model(inputs=x_input, outputs=x, name='ResNet50')
 
     return model

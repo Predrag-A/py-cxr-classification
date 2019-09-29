@@ -32,7 +32,7 @@ def load_predictor():
     global predictor
     classes = get_class_labels('cxr-data/ClassLabels.txt')
     predictor = Predictor(classes=classes)
-    predictor.load("model.h5", weights_only=True)
+    predictor.load(model_path="model.h5", weights_only=True)
 
 
 api.add_resource(LandingPage, '/')
