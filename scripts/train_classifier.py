@@ -7,7 +7,7 @@ from keras.optimizers import Adam
 from custom_sequence import CustomSequenceGenerator
 
 
-def create_model(target_size=448, classes=15, learning_rate=0.01, class_mode='categorical'):
+def create_model(target_size=448, classes=15, learning_rate=0.0146, class_mode='categorical'):
     """
     Creates a ResNet CNN model
     :param target_size: Input image dimension
@@ -28,8 +28,8 @@ def create_model(target_size=448, classes=15, learning_rate=0.01, class_mode='ca
 
 
 def train_network(train_dir, validation_dir, output_path, target_size=448, classes=15,
-                  class_mode='categorical', color_mode='grayscale', batch_size=8,
-                  epochs=200, save_graph=True, custom_generator=False):
+                  class_mode='categorical', color_mode='grayscale', batch_size=16,
+                  epochs=100, save_graph=True, custom_generator=False):
     """
     Train a ResNet CNN network and save the model so that it can be used to make predictions
     :param train_dir: Directory of training image data
@@ -51,7 +51,8 @@ def train_network(train_dir, validation_dir, output_path, target_size=448, class
 
     if custom_generator:
         # Create a custom data generator
-        custom_gen = CustomSequenceGenerator('cxr-data/images', 'cxr-data/DataEntry2.csv', 'cxr-data/ClassLabels.txt')
+        custom_gen = CustomSequenceGenerator('cxr-data/images', 'cxr-data/DataEntry2.csv', 'cxr-data/ClassLabels.txt',
+                                             batch_size=batch_size)
         history = model.fit_generator(
             custom_gen,
             epochs=epochs,
