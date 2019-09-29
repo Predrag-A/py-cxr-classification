@@ -7,7 +7,7 @@ from keras.optimizers import Adam
 from custom_sequence import CustomSequenceGenerator
 
 
-def create_model(target_size=448, classes=15, learning_rate=0.0146, class_mode='categorical'):
+def create_model(target_size=448, classes=15, learning_rate=1e-3, class_mode='categorical'):
     """
     Creates a ResNet CNN model
     :param target_size: Input image dimension
@@ -28,7 +28,7 @@ def create_model(target_size=448, classes=15, learning_rate=0.0146, class_mode='
 
 
 def train_network(train_dir, validation_dir, output_path, target_size=448, classes=15,
-                  class_mode='categorical', color_mode='grayscale', batch_size=16,
+                  class_mode='categorical', color_mode='grayscale', batch_size=8,
                   epochs=100, save_graph=True, custom_generator=False):
     """
     Train a ResNet CNN network and save the model so that it can be used to make predictions

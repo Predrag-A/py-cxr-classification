@@ -30,10 +30,10 @@ def identity_block(data, kernel_size, filters, stage, block):
     # Third component of main path
     data = Conv2D(filters=f3, kernel_size=(1, 1), strides=(1, 1), padding='valid', name=conv_name_base + '2c')(data)
     data = BatchNormalization(axis=3, name=bn_name_base + '2c')(data)
+    data = Activation('relu')(data)
 
     # Final step: Add shortcut value to main path, and pass it through a ReLu activation
     data = Add()([data, shortcut])
-    data = Activation('relu')(data)
 
     return data
 
@@ -71,10 +71,10 @@ def convolutional_block(data, kernel_size, filters, stage, block, s=2):
     shortcut = Conv2D(filters=f3, kernel_size=(1, 1), strides=(s, s), padding='valid',
                       name=conv_name_base + '10')(shortcut)
     shortcut = BatchNormalization(axis=3, name=bn_name_base + '1')(shortcut)
+    shortcut = Activation('relu')(shortcut)
 
     # Final step: Add shortcut value to main path, and pass it through a ReLu activation
     data = Add()([data, shortcut])
-    data = Activation('relu')(data)
 
     return data
 
