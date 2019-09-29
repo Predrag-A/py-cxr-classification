@@ -31,12 +31,11 @@ class CustomSequenceGenerator(Sequence):
         image = image / 255.0
         return image
 
-    def preprocess_csv(self, csv, i, labels_dict):
+    def preprocess_csv(self, csv, i):
         """
         Return feature and label data from a csv row
         :param csv: CSV file opened using pandas
         :param i: index of the CSV row
-        :param labels_dict: Dictionary containing integer label representations
         :return: Feature and Label vectors
         """
 
@@ -45,16 +44,8 @@ class CustomSequenceGenerator(Sequence):
         features = np.asarray([[row['Age'], row['Gender'], row['Position']]])
 
         # Extract labels, for multi-label data use bitwise_or to represent all classes
-        label_attr = row['Labels']
-        labels = np.zeros(self.n_classes, dtype=int)
-        delimiter = '|'
-        if delimiter in label_attr:
-            for label in label_attr.split(delimiter):
-                categorical = to_categorical(labels_dict.get(label), self.n_classes, dtype=int)
-                labels = np.bitwise_or(labels, categorical)
-        else:
-            labels = to_categorical(labels_dict.get(label_attr), self.n_classes)
-        return features, labels.astype('float32')
+        labels = row['Labels']
+        return features, labels
 
     def __init__(self, image_dir, csv_file_path, label_path, dim=448, batch_size=8,
                  n_classes=15, n_channels=1, vec_size=3, shuffle=True):
@@ -116,10 +107,16 @@ class CustomSequenceGenerator(Sequence):
             # Fetch each image from the file system and features/labels for that image
             image_file_path = self.image_dir + "/" + sample
             image = self.preprocess_image(Image.open(image_file_path), 448)
-            features, labels = self.preprocess_csv(self.csv_file, sample, self.labels_dict)
+            features, labels = self.preprocess_csv(self.csv_file, sample)
 
             x_batch_image[i] = image
             x_batch_vector[i] = features
-            y_batch[i] = labels
+            y_batch[i] = to_categorical(self.labels_dict.get(labels), self.n_classes)
 
         return [x_batch_image, x_batch_vector], y_batch
+
+
+if __name__ == '__main__':
+    gen = CustomSequenceGenerator('cxr-data/images', 'cxr-data/DataEntry2.csv',
+                                  'cxr-data/ClassLabels.txt', batch_size=3)
+    gen.__getitem__(0)

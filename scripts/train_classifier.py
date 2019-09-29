@@ -7,18 +7,36 @@ from keras.optimizers import Adam
 from custom_sequence import CustomSequenceGenerator
 
 
-def create_model(target_size=448, classes=15, learning_rate=1e-3, class_mode='categorical'):
+def lr_schedule(epoch):
+    """
+    Learning rate is scheduled to be reduced after 80, 120, 160, 180 epochs.
+    Called automatically every epoch as part of callbacks during training.
+    :param epoch: The number of epochs
+    :return: Learning rate
+    """
+    lr = 1e-3
+    if epoch > 180:
+        lr *= 0.5e-3
+    elif epoch > 160:
+        lr *= 1e-3
+    elif epoch > 120:
+        lr *= 1e-2
+    elif epoch > 80:
+        lr *= 1e-1
+    print('Learning rate: ', lr)
+    return lr
+
+
+def create_model(target_size=448, classes=15, class_mode='categorical'):
     """
     Creates a ResNet CNN model
     :param target_size: Input image dimension
     :param classes: Number of classification categories
-    :param learning_rate: Learning rate for the Adam optimizer
-    :param epochs: Number of training epochs, used to define decay
     :param class_mode: Binary for 2 classification categories, categorical for more than 2
     :return: Compiled ResNet model
     """
     model = build_resnet(target_size, target_size, classes=classes,  additional_input=True)
-    optimizer = Adam(learning_rate=learning_rate)
+    optimizer = Adam(learning_rate=lr_schedule(0))
 
     loss = 'categorical_crossentropy' if class_mode == 'categorical' else 'binary_crossentropy'
     model.compile(loss=loss,
@@ -58,6 +76,7 @@ def train_network(train_dir, validation_dir, output_path, target_size=448, class
             epochs=epochs,
             use_multiprocessing=True,
             workers=8)
+
     else:
         # The data augmentation strategy for test data
         train_datagen = ImageDataGenerator(
@@ -129,4 +148,4 @@ if __name__ == '__main__':
     ap.add_argument("-o", "--output", type=str, required=True, help="output path of the model")
     args = vars(ap.parse_args())
 
-    train_network(args["train"], args["validation"], args["output"], custom_generator=True)
+    train_network(args["train"], args["validation"], args["output"], batch_size=16, custom_generator=True, epochs=200)
