@@ -116,6 +116,8 @@ class CustomSequenceGenerator(Sequence):
         return [x_batch_image, x_batch_vector], y_batch
 
 
+###############################################################
+
 if __name__ == '__main__':
     gen = CustomSequenceGenerator('cxr-data/images', 'cxr-data/DataEntry2.csv',
                                   'cxr-data/ClassLabels.txt', batch_size=3)

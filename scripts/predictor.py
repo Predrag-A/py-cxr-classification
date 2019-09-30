@@ -79,18 +79,23 @@ class Predictor:
         sorted_dict = sorted(dictionary.items(), key=lambda x: x[1], reverse=True)[:5]
         return dict(sorted_dict)
 
-    def predict(self, image, target_size):
+    def predict(self, image, target_size, multi_input=False, vec=None):
         """
         Method used to return top 5 most likely classes of the image using a trained Keras model
         :param image: Image opened using io.BytesIO
         :param target_size: Target size of the image
+        :param multi_input: Defines if model accepts multiple inputs or not
+        :param target_size: Vector containing another input (required only if multi_input is True)
         :return: Dictionary containing top five results with corresponding labels
         """
         image = self.prepare_image(image, target_size)
 
         with self.graph.as_default():
             with self.session.as_default():
-                preds = self.model.predict(image)
+                if multi_input:
+                    preds = self.model.predict([image, vec])
+                else:
+                    preds = self.model.predict(image)
         results = self.decode_predictions(preds)
 
         return results
