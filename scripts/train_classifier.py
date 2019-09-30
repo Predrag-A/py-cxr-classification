@@ -15,13 +15,13 @@ def lr_schedule(epoch):
     :return: Learning rate
     """
     lr = 1e-3
-    if epoch > 180:
+    if epoch > 90:
         lr *= 0.5e-3
-    elif epoch > 160:
-        lr *= 1e-3
-    elif epoch > 120:
-        lr *= 1e-2
     elif epoch > 80:
+        lr *= 1e-3
+    elif epoch > 60:
+        lr *= 1e-2
+    elif epoch > 40:
         lr *= 1e-1
     print('Learning rate: ', lr)
     return lr
@@ -148,4 +148,4 @@ if __name__ == '__main__':
     ap.add_argument("-o", "--output", type=str, required=True, help="output path of the model")
     args = vars(ap.parse_args())
 
-    train_network(args["train"], args["validation"], args["output"], batch_size=16, custom_generator=True, epochs=200)
+    train_network(args["train"], args["validation"], args["output"], batch_size=16, custom_generator=True, epochs=100)
