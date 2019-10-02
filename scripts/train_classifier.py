@@ -128,4 +128,4 @@ if __name__ == '__main__':
     ap.add_argument("-o", "--output", type=str, required=True, help="output path of the model")
     args = vars(ap.parse_args())
 
-    train_network(args["train"], args["validation"], args["output"], batch_size=8, custom_generator=True, epochs=50)
+    train_network(args["train"], args["validation"], args["output"], batch_size=8, custom_generator=True, epochs=20)

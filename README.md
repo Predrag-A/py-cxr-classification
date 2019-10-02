@@ -1,5 +1,8 @@
 # CXR Image classification
 
+### Implemented architecture:
+![](training-results/architecture.png)
+
 ### Accuracy and loss after 50 epochs:
 ![](training-results/accuracy.png)
 ![](training-results/loss.png)
