@@ -7,26 +7,6 @@ from keras.optimizers import Adam
 from custom_sequence import CustomSequenceGenerator
 
 
-def lr_schedule(epoch):
-    """
-    Learning rate is scheduled to be reduced after 80, 120, 160, 180 epochs.
-    Called automatically every epoch as part of callbacks during training.
-    :param epoch: The number of epochs
-    :return: Learning rate
-    """
-    lr = 1e-3
-    if epoch > 90:
-        lr *= 0.5e-3
-    elif epoch > 80:
-        lr *= 1e-3
-    elif epoch > 60:
-        lr *= 1e-2
-    elif epoch > 40:
-        lr *= 1e-1
-    print('Learning rate: ', lr)
-    return lr
-
-
 def create_model(target_size=448, classes=15, class_mode='categorical'):
     """
     Creates a ResNet CNN model
@@ -36,7 +16,7 @@ def create_model(target_size=448, classes=15, class_mode='categorical'):
     :return: Compiled ResNet model
     """
     model = build_resnet(target_size, target_size, classes=classes,  additional_input=True)
-    optimizer = Adam(learning_rate=lr_schedule(0))
+    optimizer = Adam(0.001)
 
     loss = 'categorical_crossentropy' if class_mode == 'categorical' else 'binary_crossentropy'
     model.compile(loss=loss,
@@ -47,7 +27,7 @@ def create_model(target_size=448, classes=15, class_mode='categorical'):
 
 def train_network(train_dir, validation_dir, output_path, target_size=448, classes=15,
                   class_mode='categorical', color_mode='grayscale', batch_size=8,
-                  epochs=100, save_graph=True, custom_generator=False):
+                  epochs=50, save_graph=True, custom_generator=False):
     """
     Train a ResNet CNN network and save the model so that it can be used to make predictions
     :param train_dir: Directory of training image data
@@ -148,4 +128,4 @@ if __name__ == '__main__':
     ap.add_argument("-o", "--output", type=str, required=True, help="output path of the model")
     args = vars(ap.parse_args())
 
-    train_network(args["train"], args["validation"], args["output"], batch_size=16, custom_generator=True, epochs=100)
+    train_network(args["train"], args["validation"], args["output"], batch_size=8, custom_generator=True, epochs=50)

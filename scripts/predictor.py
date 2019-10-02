@@ -85,7 +85,7 @@ class Predictor:
         :param image: Image opened using io.BytesIO
         :param target_size: Target size of the image
         :param multi_input: Defines if model accepts multiple inputs or not
-        :param target_size: Vector containing another input (required only if multi_input is True)
+        :param vec: Vector containing another input (required only if multi_input is True)
         :return: Dictionary containing top five results with corresponding labels
         """
         image = self.prepare_image(image, target_size)

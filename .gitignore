@@ -6,6 +6,4 @@ cxr-data/validation/*
 cxr-data/validation-sample/*
 logfile.log
 scripts/__pycache__/*
-accuracy.png
-loss.png
 *.h5

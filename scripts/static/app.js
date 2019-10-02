@@ -1,4 +1,7 @@
 const input = document.getElementById('fileToUpload');
+const age = document.getElementById('age');
+const position = document.getElementById('position');
+const gender = document.getElementById('gender');
 const resultsTable = document.getElementById('resultsTable');
 const header = document.getElementById('tableHeader');
 const previewImage = document.getElementById('previewImage');
@@ -66,6 +69,9 @@ const onSelectFile = () => {
 
     let data = new FormData();
     data.append('image', input.files[0]);
+    data.append('age', age.value);
+    data.append('position', position.value);
+    data.append('gender', gender.value);
     upload(data);
 };
 
