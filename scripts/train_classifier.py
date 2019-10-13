@@ -1,10 +1,14 @@
 # python scripts/train_classifier.py -t cxr-data/train -v cxr-data/validation -o model.h5
 import matplotlib.pyplot as plt
 import argparse
+import cv2
 from keras_preprocessing.image import ImageDataGenerator
 from resnet_model import build_resnet
 from keras.optimizers import Adam
 from custom_sequence import CustomSequenceGenerator
+from albumentations import (
+    Compose, HorizontalFlip, ShiftScaleRotate
+)
 
 
 def create_model(target_size=448, classes=15, class_mode='categorical'):
@@ -47,15 +51,27 @@ def train_network(train_dir, validation_dir, output_path, target_size=448, class
     model = create_model(target_size, classes, class_mode=class_mode)
     model.summary()
 
+    # Create custom data augmentation parameters
+    aug = Compose([
+        HorizontalFlip(p=0.5),
+        ShiftScaleRotate(
+            shift_limit=0.0625, scale_limit=0.1,
+            rotate_limit=7, border_mode=cv2.BORDER_REFLECT_101, p=0.8),
+    ])
+
     if custom_generator:
         # Create a custom data generator
         custom_gen = CustomSequenceGenerator('cxr-data/images', 'cxr-data/DataEntry2.csv', 'cxr-data/ClassLabels.txt',
-                                             batch_size=batch_size)
+                                             batch_size=batch_size, augmentations=aug)
+
+        custom_gen_val = CustomSequenceGenerator('cxr-data/images_val', 'cxr-data/DataEntry2_val.csv',
+                                                 'cxr-data/ClassLabels.txt', batch_size=batch_size)
         history = model.fit_generator(
             custom_gen,
+            validation_data=custom_gen_val,
             epochs=epochs,
             use_multiprocessing=True,
-            workers=8)
+            workers=4)
 
     else:
         # The data augmentation strategy for test data

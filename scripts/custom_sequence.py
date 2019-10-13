@@ -27,6 +27,8 @@ class CustomSequenceGenerator(Sequence):
         # Resize and preprocess image
         image = image.resize((target_size, target_size))
         image = img_to_array(image)
+        if self.augment is not None:
+            image = self.augment(image=image)['image']
         image = np.expand_dims(image, axis=0)
         image = image / 255.0
         return image
@@ -48,7 +50,7 @@ class CustomSequenceGenerator(Sequence):
         return features, labels
 
     def __init__(self, image_dir, csv_file_path, label_path, dim=448, batch_size=8,
-                 n_classes=15, n_channels=1, vec_size=3, shuffle=True):
+                 n_classes=15, n_channels=1, vec_size=3, shuffle=True, augmentations=None):
         """
         Custom keras generator
         :param image_dir: Path to the image directory
@@ -60,6 +62,7 @@ class CustomSequenceGenerator(Sequence):
         :param n_channels: Number of image color channels
         :param vec_size: Feature vector dimension
         :param shuffle: Defines randomness of data
+        :param augmentations: Data augmentations using albumentations library
         """
         self.image_dir = image_dir
         self.image_file_list = os.listdir(image_dir)
@@ -72,6 +75,7 @@ class CustomSequenceGenerator(Sequence):
         self.vec_size = vec_size
         self.labels = get_class_labels(label_path)
         self.labels_dict = dict(zip(self.labels, range(0, len(self.labels))))
+        self.augment = augmentations
 
     def __len__(self):
         """
