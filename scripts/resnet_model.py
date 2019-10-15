@@ -5,6 +5,16 @@ from keras.models import Model
 
 
 def identity_block(data, kernel_size, filters, stage, block):
+    """
+    Adds an identity block to the input model
+    An identity block contains a residual connection to the begining of the block    
+    :param data: Functional API model
+    :param kernel_size: Kernel size of the second conv operation
+    :param filters: Dimensionality of the conv operation outputs
+    :param stage: Id of the stage
+    :param block: Id of the block
+    :return: Model with added layers
+    """
 
     # Defining name basis
     conv_name_base = 'res' + str(stage) + block + '_branch'
@@ -39,6 +49,18 @@ def identity_block(data, kernel_size, filters, stage, block):
 
 
 def convolutional_block(data, kernel_size, filters, stage, block, s=2):
+    """
+    Adds a convolutional block to the input model
+    A convolutional block contains a residual connection to the begining of the block
+    which has an added convolution layer to adjust the dimensionality of the connection  
+    :param data: Functional API model
+    :param kernel_size: Kernel size of the second conv operation
+    :param filters: Dimensionality of the conv operation outputs
+    :param stage: Id of the stage
+    :param block: Id of the block
+    :param s: Stride of the convolution operation applied to the residual connection
+    :return: Model with added layers
+    """
 
     # Defining name basis
     conv_name_base = 'res' + str(stage) + block + '_branch'
@@ -80,6 +102,15 @@ def convolutional_block(data, kernel_size, filters, stage, block, s=2):
 
 
 def build_resnet(img_height, img_width, classes=2, additional_input=False, vec_dim=3):
+    """
+    Creates a modified ResNet-50 model using Keras functional API
+    :param img_height: Height of input image
+    :param img_width: Width of input image
+    :param classes: Number of classification groups
+    :param additional_input: Whether an additional input vector is used
+    :param vec_dim: Dimension of the additional input vector
+    :return: Created functional API model
+    """
 
     input_shape = (img_height, img_width, 1)
 
