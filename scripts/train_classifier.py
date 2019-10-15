@@ -64,7 +64,7 @@ def train_network(train_dir, validation_dir, output_path, target_size=448, class
         custom_gen = CustomSequenceGenerator('cxr-data/images', 'cxr-data/DataEntry2.csv', 'cxr-data/ClassLabels.txt',
                                              batch_size=batch_size, augmentations=aug)
 
-        custom_gen_val = CustomSequenceGenerator('cxr-data/images_val', 'cxr-data/DataEntry2_val.csv',
+        custom_gen_val = CustomSequenceGenerator('cxr-data/images_val', 'cxr-data/DataEntry2.csv',
                                                  'cxr-data/ClassLabels.txt', batch_size=batch_size)
         history = model.fit_generator(
             custom_gen,
@@ -144,4 +144,4 @@ if __name__ == '__main__':
     ap.add_argument("-o", "--output", type=str, required=True, help="output path of the model")
     args = vars(ap.parse_args())
 
-    train_network(args["train"], args["validation"], args["output"], batch_size=8, custom_generator=True, epochs=20)
+    train_network(args["train"], args["validation"], args["output"], batch_size=8, custom_generator=True, epochs=50)

@@ -45,7 +45,7 @@ class CustomSequenceGenerator(Sequence):
         row = csv.loc[i, :]
         features = np.asarray([[row['Age'], row['Gender'], row['Position']]])
 
-        # Extract labels, for multi-label data use bitwise_or to represent all classes
+        # Extract labels
         labels = row['Labels']
         return features, labels
 
