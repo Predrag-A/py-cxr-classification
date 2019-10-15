@@ -47,7 +47,6 @@ def process_inputs(request_data, multi_input=False):
         age = float(request.form['age'])
         age = age/max(age, max_age)
         vec = np.asarray([[age, float(request.form['gender']), float(request.form['position'])]])
-        return image, vec
     return image, vec
 
 
